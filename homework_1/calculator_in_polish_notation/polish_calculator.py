@@ -1,7 +1,7 @@
 OPERATOR_PERMITTED_VALUES = {'+', '-', '*', '/', 'add', 'sub', 'mul', 'div'}
 
 
-def calculate(operator: str, operand_1: float, operand_2: float):
+def calculate(operator: str, operand_1: int, operand_2: int):
     if operator == '+' or operator == 'add':
         return operand_1 + operand_2
     elif operator == '-' or operator == 'sub':
@@ -13,32 +13,53 @@ def calculate(operator: str, operand_1: float, operand_2: float):
 
 
 def valid_input(my_input):
-    if len(my_input) != 3:
-        print('Invalid expression')
-        return False
-    elif my_input[0] not in OPERATOR_PERMITTED_VALUES:
-        print('Invalid operator')
-        return False
-    elif type(my_input[1]) != int and type(my_input[1]) != float:
-        print('Invalid first operand')
-        return False
-    if type(my_input[2]) != int and type(my_input[2]) != float:
-        print('Invalid second operand')
-        return False
-    return True
+    pass
 
 
-def sting_to_number(string):
-    if '.' in string:
-        return float(string)
-    else:
-        return int(string)
+def is_operator(list_element):
+    return list_element in OPERATOR_PERMITTED_VALUES
 
 
-while True:
-    my_expression = input('Expression: ')
-    expression_list = my_expression.split()
-    expression_list[1] = sting_to_number(expression_list[1])
-    expression_list[2] = sting_to_number(expression_list[2])
-    if valid_input(expression_list):
-        print(calculate(expression_list[0], expression_list[1], expression_list[2]))
+def is_number(list_element):
+    return list_element.isdecimal()
+
+
+def expression_simplification(my_list):
+    simpl_list = my_list.copy()
+    operator_flag = False
+    number_flag = False
+    for i, item in enumerate(simpl_list):
+        print(i, end=' ')
+        if item in OPERATOR_PERMITTED_VALUES:
+            operator_flag = True
+            number_flag = False
+            my_operator = item
+        else:
+            if not number_flag:
+                number_flag = True
+                my_number = int(item)
+            else:
+                if operator_flag:
+                    simpl_list.pop(i-2)
+                    simpl_list.pop(i-2)
+                    simpl_list.pop(i-2)
+                    simpl_list.insert(i-2, calculate(my_operator, my_number, int(item)))
+                    number_flag = False
+                    operator_flag = False
+    return simpl_list
+
+
+def recursive_simplification(new_list):
+    print(new_list)
+    if len(new_list) == 1:
+        return new_list[0]
+    return recursive_simplification(expression_simplification(new_list))
+
+
+my_expression = input('Expression: ')
+expression_list = my_expression.split()
+#print(recursive_simplification(expression_list))
+a = expression_simplification(expression_list)
+print(expression_list, len(expression_list))
+print(a, len(a))
+print(expression_simplification(a), len(expression_simplification(a)))
